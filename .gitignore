@@ -5,7 +5,7 @@
 *.m~
 
 # MATLAB data files (uncomment if you don't want to track data files)
-# *.mat
+*.mat
 
 # MATLAB figures
 *.fig
