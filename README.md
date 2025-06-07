@@ -33,6 +33,9 @@ cd RETINA
 ## Quick Start
 
 ```matlab
+% Clear workspace and initialize
+clear all; close all; clc;
+
 % Add RETINA to your MATLAB path
 addpath('path/to/RETINA');
 
@@ -59,14 +62,14 @@ pvec = [0.33; 0.33];  % 33% training, 33% validation, 34% test
 
 ### Parameters
 
-- `pvec`: Vector of subsample proportions (e.g., `[0.33; 0.33]` for equal splits)
+- `pvec`: Vector of subsample proportions (must sum to less than 1, e.g., `[0.33; 0.33]` for equal splits)
 - `y`: Response variable (n×1 column vector)
 - `w`: Predictor matrix (n×p matrix)
 - `dataflag`: Data type indicator (1 = actual data, 0 = simulated data)
 - `procflag`: Algorithm variant:
-  - 1: Original PAGW algorithm
-  - 2: PAGW with union model
-  - 3: Adaptive lambda approach
+  - 1: Original PAGW algorithm (fixed lambda grid search)
+  - 2: PAGW with union model (includes all-predictor model)
+  - 3: Adaptive lambda approach (adjusts grid based on data characteristics)
 - `verbose`: Output verbosity (0 = silent, 1 = verbose)
 
 ### Output
@@ -76,12 +79,29 @@ pvec = [0.33; 0.33];  % 33% training, 33% validation, 34% test
 
 ## Algorithm Details
 
-RETINA works in several stages:
+RETINA works in several stages with sophisticated model selection mechanisms:
 
-1. **Data Splitting**: Divides data into training, validation, and test sets
-2. **Model Building**: Constructs candidate models on the training set using stepwise selection with multicollinearity control
-3. **Cross-Validation**: Evaluates candidate models on the validation set
-4. **Final Selection**: Tests the best models on the test set and selects the final model using information criteria
+### Core Algorithm Flow
+
+1. **Data Splitting** (`datasubsets.m`): Divides data into three subsamples for training, validation, and testing
+2. **Model Building** (`build_1.m`, `build_2.m`, `build_3.m`): Constructs candidate models on the first subsample using stepwise addition of predictors with multicollinearity control via lambda threshold
+3. **Cross-Validation** (`crossub_1_2_2.m`): Evaluates candidate models on the second subsample
+4. **Final Selection** (`evamod.m`, `evafinal.m`): Tests the best models on the third subsample and selects the final model using information criteria (AIC, AICC, or BIC)
+
+### Key Components
+
+- **Model Building**: Stepwise addition of predictors with multicollinearity control via lambda threshold
+- **Model Evaluation**: Uses AIC, AICC, or BIC for model selection
+- **Efficient Computation**: Uses sweep operations (`sweep.m`) for matrix calculations
+- **Duplicate Detection**: `compmod.m` prevents redundant model evaluation
+
+### Algorithm Variants
+
+The three `procflag` options provide different approaches:
+
+- **Procedure 1** (Original PAGW): Fixed lambda grid search with systematic exploration of predictor combinations
+- **Procedure 2** (PAGW with union model): Includes all-predictor model in addition to stepwise selection
+- **Procedure 3** (Adaptive lambda): Adjusts lambda grid based on data characteristics for more flexible multicollinearity control
 
 ## Example
 
@@ -135,6 +155,32 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Authors
 
 - Massimiliano Marinucci
+
+## References
+
+### Core RETINA Publications
+
+- Pérez-Amaral, T., Gallo, G. M., & White, H. (2003). A flexible tool for model building: the relevant transformation of the inputs network approach (RETINA). *Oxford Bulletin of Economics and Statistics*, 65(s1), 821-838.
+
+- Pérez-Amaral, T., Gallo, G. M., & White, H. (2005). A comparison of complementary automatic modeling methods: RETINA and PcGets. *Econometric Theory*, 21(1), 262-277.
+
+- Marinucci, M. (2010). *Automatic Prediction and Model Selection*. LAP Lambert Academic Publishing. ISBN: 978-3-8383-2689-4.
+
+### Related Automatic Model Selection Methods
+
+- Hendry, D. F., & Krolzig, H. M. (1999). Improving on 'Data mining reconsidered' by K.D. Hoover and S.J. Perez. *Econometrics Journal*, 2(2), 202-219.
+
+- Hoover, K. D., & Perez, S. J. (1999). Data mining reconsidered: encompassing and the general-to-specific approach to specification search. *Econometrics Journal*, 2(2), 167-191.
+
+- Hendry, D. F., & Krolzig, H. M. (2001). *Automatic Econometric Model Selection Using PcGets*. London: Timberlake Consultants.
+
+- Castle, J. L., Doornik, J. A., & Hendry, D. F. (2012). Model selection when there are multiple breaks. *Journal of Econometrics*, 169(2), 239-246.
+
+### Multicollinearity and Variable Selection
+
+- Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. *Journal of the Royal Statistical Society: Series B*, 58(1), 267-288.
+
+- Zou, H., & Hastie, T. (2005). Regularization and variable selection via the elastic net. *Journal of the Royal Statistical Society: Series B*, 67(2), 301-320.
 
 ## Acknowledgments
 
