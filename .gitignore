@@ -1,0 +1,58 @@
+# MATLAB autosave files
+*.asv
+
+# MATLAB temporary files
+*.m~
+
+# MATLAB data files (uncomment if you don't want to track data files)
+# *.mat
+
+# MATLAB figures
+*.fig
+
+# MATLAB published output
+html/
+
+# Simulink cache files
+slprj/
+sccprj/
+*.slxc
+
+# Simulink autosave files
+*.autosave
+
+# MATLAB code generation folders
+codegen/
+mexfiles/
+
+# MATLAB app designer autosave files
+*.mlapp~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor backup files
+*~
+*.swp
+*.swo
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Personal notes or local configuration
+notes/
+local/
+.vscode/
+.idea/
